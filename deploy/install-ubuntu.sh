@@ -24,6 +24,8 @@ if ! id gamma-calc >/dev/null 2>&1; then
 fi
 
 cp app.js index.html styles.css server.mjs README.md "${APP_DIR}/"
+rm -rf "${APP_DIR}/assets"
+cp -R assets "${APP_DIR}/assets"
 cp deploy/gamma-calc.service "${SERVICE_FILE}"
 
 chown -R root:root "${APP_DIR}"

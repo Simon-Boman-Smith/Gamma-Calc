@@ -11,6 +11,8 @@ fi
 
 systemctl stop gamma-calc || true
 cp app.js index.html styles.css server.mjs README.md "${APP_DIR}/"
+rm -rf "${APP_DIR}/assets"
+cp -R assets "${APP_DIR}/assets"
 chown -R root:root "${APP_DIR}"
 chmod -R a+rX "${APP_DIR}"
 systemctl start gamma-calc
