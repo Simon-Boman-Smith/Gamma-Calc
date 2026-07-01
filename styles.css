@@ -91,10 +91,11 @@ textarea {
 
 .layout {
   width: min(1280px, calc(100% - 32px));
-  margin: 28px auto 48px;
+  margin: 20px auto 48px;
   display: grid;
-  grid-template-columns: minmax(320px, 420px) 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(560px, 1.45fr) minmax(320px, 0.85fr);
+  gap: 14px;
+  align-items: start;
 }
 
 .panel,
@@ -106,16 +107,30 @@ textarea {
 }
 
 .panel {
-  padding: 22px;
+  padding: 18px;
 }
 
 .admin-panel {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(150px, auto) 1fr;
+  column-gap: 16px;
+  row-gap: 6px;
+  align-items: end;
+  padding: 10px 14px;
+  box-shadow: none;
 }
 
 .admin-session {
   display: grid;
-  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(260px, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.admin-session[hidden],
+#loginForm[hidden] {
+  display: none;
 }
 
 .password-form {
@@ -131,6 +146,48 @@ textarea {
   font-weight: 700;
 }
 
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+}
+
+.admin-header h2 {
+  font-size: 1rem;
+}
+
+.admin-login-form {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.admin-panel .formula-note {
+  grid-column: 1 / -1;
+  margin-top: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.76rem;
+}
+
+.admin-panel label {
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.admin-panel input {
+  padding: 7px 9px;
+}
+
+.admin-panel button {
+  padding: 8px 12px;
+}
+
 .admin-locked {
   display: none !important;
 }
@@ -140,8 +197,19 @@ textarea {
   padding: 22px;
 }
 
-.height-panel {
+.calculator-panel {
+  grid-column: 1;
+}
+
+.side-column {
+  display: grid;
+  gap: 14px;
   grid-column: 2;
+}
+
+.height-panel,
+.source-panel {
+  grid-column: auto;
 }
 
 .panel-title-row,
@@ -157,11 +225,11 @@ textarea {
 .calculator-form,
 .form-grid {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .form-grid {
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 label {
@@ -261,7 +329,7 @@ button:focus-visible {
   display: grid;
   grid-template-columns: repeat(3, minmax(130px, 1fr));
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .height-result {
@@ -271,7 +339,8 @@ button:focus-visible {
 .result-card div {
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 15px;
+  min-height: 86px;
+  padding: 14px;
   background: #f8fbfb;
 }
 
@@ -284,8 +353,31 @@ button:focus-visible {
 
 .result-card strong {
   display: block;
-  font-size: clamp(1.15rem, 2vw, 1.65rem);
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
   line-height: 1.2;
+}
+
+.height-panel h2,
+.source-panel h2 {
+  font-size: 1.15rem;
+}
+
+.height-panel .form-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.height-result {
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.height-result div {
+  min-height: 72px;
+  padding: 12px;
+}
+
+.height-result strong {
+  font-size: 1.35rem;
 }
 
 .formula-note {
@@ -406,8 +498,23 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 
+  .calculator-panel,
+  .side-column,
   .height-panel {
     grid-column: auto;
+  }
+
+  .admin-session,
+  .admin-login-form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-panel .formula-note {
+    white-space: normal;
   }
 }
 
