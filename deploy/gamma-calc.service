@@ -1,0 +1,22 @@
+[Unit]
+Description=Gamma Calc internal source calculator
+After=network.target
+
+[Service]
+Type=simple
+User=gamma-calc
+Group=gamma-calc
+WorkingDirectory=/opt/gamma-calc
+ExecStart=/usr/bin/node /opt/gamma-calc/server.mjs
+Environment=GAMMA_CALC_HOST=0.0.0.0
+Environment=GAMMA_CALC_PORT=5174
+Environment=GAMMA_CALC_DATA_DIR=/var/lib/gamma-calc
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/gamma-calc
+
+[Install]
+WantedBy=multi-user.target
