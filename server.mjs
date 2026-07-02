@@ -181,7 +181,7 @@ function audit(data, actor, action, details) {
   data.auditLog.push({ id: randomUUID(), at: nowIso(), actor, action, details });
 }
 
-function normalizeSource(input) {
+export function normalizeSource(input) {
   return {
     id: input.id || randomUUID(),
     isotope: input.isotope,
@@ -189,6 +189,7 @@ function normalizeSource(input) {
     containerNumber: String(input.containerNumber || "").trim(),
     startStrength: Number(input.startStrength),
     strengthDate: input.strengthDate,
+    returnedDate: input.returnedDate || "",
     notes: String(input.notes || "").trim(),
     isActive: Boolean(input.isActive),
     updatedAt: nowIso()
@@ -321,18 +322,24 @@ async function serveStatic(req, res, url) {
 
 await ensureDataFile();
 
-createServer(async (req, res) => {
-  try {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    if (url.pathname.startsWith("/api/")) {
-      await handleApi(req, res, url.pathname);
-    } else {
-      await serveStatic(req, res, url);
+export function createGammaCalcServer() {
+  return createServer(async (req, res) => {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      if (url.pathname.startsWith("/api/")) {
+        await handleApi(req, res, url.pathname);
+      } else {
+        await serveStatic(req, res, url);
+      }
+    } catch (error) {
+      jsonResponse(res, 500, { error: error.message || "Server error." });
     }
-  } catch (error) {
-    jsonResponse(res, 500, { error: error.message || "Server error." });
-  }
-}).listen(PORT, HOST, () => {
-  console.log(`Gamma Calc running at http://${HOST}:${PORT}/`);
-  console.log(`Shared data file: ${DATA_FILE}`);
-});
+  });
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  createGammaCalcServer().listen(PORT, HOST, () => {
+    console.log(`Gamma Calc running at http://${HOST}:${PORT}/`);
+    console.log(`Shared data file: ${DATA_FILE}`);
+  });
+}
