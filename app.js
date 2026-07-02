@@ -144,8 +144,11 @@
 
   function formatMinutes(value) {
     if (!Number.isFinite(value)) return "--";
-    if (value < 1) return `${(value * 60).toFixed(1)} sec`;
-    return `${value.toFixed(value >= 10 ? 1 : 2)} min`;
+    const totalSeconds = Math.round(value * 60);
+    if (totalSeconds < 60) return `${totalSeconds} ${totalSeconds === 1 ? "sec" : "secs"}`;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes} ${minutes === 1 ? "min" : "mins"} ${seconds.toString().padStart(2, "0")} ${seconds === 1 ? "sec" : "secs"}`;
   }
 
   function formatMm(value) {
@@ -614,6 +617,7 @@
     currentStrengthCi,
     adjustedExposureCiMinutes,
     exposureTimeMinutes,
+    formatMinutes,
     sourceHeightMm,
     sourceHeight,
     toMm,
