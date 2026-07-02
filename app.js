@@ -51,6 +51,8 @@
     irCount: document.getElementById("irCount"),
     coCount: document.getElementById("coCount"),
     exportButton: document.getElementById("exportButton"),
+    exportCsvButton: document.getElementById("exportCsvButton"),
+    printReportButton: document.getElementById("printReportButton"),
     importInput: document.getElementById("importInput")
   };
 
@@ -463,6 +465,141 @@
     URL.revokeObjectURL(url);
   }
 
+  function inventoryExportRows(allSources, onDateIso) {
+    return [...allSources]
+      .sort((a, b) => {
+        if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+        return a.isotope.localeCompare(b.isotope) || a.serialNumber.localeCompare(b.serialNumber);
+      })
+      .map((source) => {
+        const current = currentStrengthCi(source, onDateIso);
+        const ageDays = daysBetween(source.strengthDate, onDateIso);
+        return {
+          status: source.isActive ? "Active" : "Inactive",
+          isotope: source.isotope,
+          serialNumber: source.serialNumber,
+          containerNumber: source.containerNumber,
+          startStrengthCi: Number(source.startStrength),
+          currentStrengthCi: Number(current.toFixed(3)),
+          strengthDate: source.strengthDate,
+          ageDays: Number(ageDays.toFixed(0)),
+          halfLifeDays: Number(ISOTOPES[source.isotope].halfLifeDays.toFixed(2)),
+          notes: source.notes || ""
+        };
+      });
+  }
+
+  function csvCell(value) {
+    const text = String(value ?? "");
+    return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  }
+
+  function inventoryCsv(allSources, onDateIso) {
+    const columns = [
+      ["Status", "status"],
+      ["Isotope", "isotope"],
+      ["Serial number", "serialNumber"],
+      ["Container number", "containerNumber"],
+      ["Starting strength (Ci)", "startStrengthCi"],
+      ["Current strength (Ci)", "currentStrengthCi"],
+      ["Strength date", "strengthDate"],
+      ["Age (days)", "ageDays"],
+      ["Half-life (days)", "halfLifeDays"],
+      ["Notes", "notes"]
+    ];
+    const rows = inventoryExportRows(allSources, onDateIso);
+    return [
+      columns.map(([heading]) => csvCell(heading)).join(","),
+      ...rows.map((row) => columns.map(([, key]) => csvCell(row[key])).join(","))
+    ].join("\r\n");
+  }
+
+  function downloadTextFile(contents, filename, type) {
+    const blob = new Blob([contents], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportCsv() {
+    if (!isAdmin) return;
+    downloadTextFile(inventoryCsv(sources, todayIso()), `gamma-calc-inventory-${todayIso()}.csv`, "text/csv");
+  }
+
+  function printInventoryReport() {
+    if (!isAdmin) return;
+    const reportWindow = window.open("", "_blank");
+    if (!reportWindow) {
+      window.alert("The report window was blocked. Please allow pop-ups for this site and try again.");
+      return;
+    }
+
+    const rows = inventoryExportRows(sources, todayIso());
+    reportWindow.document.write(`
+      <!doctype html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>Gamma Calc Inventory ${todayIso()}</title>
+          <style>
+            body { font-family: "Segoe UI", Arial, sans-serif; color: #333; margin: 28px; }
+            h1 { color: #002f6c; margin: 0 0 4px; }
+            p { margin: 0 0 18px; color: #75787b; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #d9dee2; padding: 7px 8px; text-align: left; vertical-align: top; }
+            th { background: #009dd5; color: #fff; }
+            .current { color: #f8983e; font-weight: 800; }
+            .inactive { color: #75787b; }
+            @media print { body { margin: 14mm; } }
+          </style>
+        </head>
+        <body>
+          <h1>Gamma Calc Inventory</h1>
+          <p>Generated ${escapeHtml(todayIso())}. Current strength calculated for the generated date.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Isotope</th>
+                <th>Serial</th>
+                <th>Container</th>
+                <th>Starting Ci</th>
+                <th>Current Ci</th>
+                <th>Strength date</th>
+                <th>Age</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows
+                .map(
+                  (row) => `
+                    <tr class="${row.status === "Inactive" ? "inactive" : ""}">
+                      <td>${escapeHtml(row.status)}</td>
+                      <td>${escapeHtml(row.isotope)}</td>
+                      <td>${escapeHtml(row.serialNumber)}</td>
+                      <td>${escapeHtml(row.containerNumber)}</td>
+                      <td>${escapeHtml(row.startStrengthCi)}</td>
+                      <td class="current">${escapeHtml(row.currentStrengthCi)}</td>
+                      <td>${escapeHtml(row.strengthDate)}</td>
+                      <td>${escapeHtml(row.ageDays)} days</td>
+                      <td>${escapeHtml(row.notes)}</td>
+                    </tr>`
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    reportWindow.document.close();
+    reportWindow.focus();
+    reportWindow.print();
+  }
+
   function importData(event) {
     if (!isAdmin) return;
     const file = event.target.files[0];
@@ -595,6 +732,8 @@
     handleSourceListClick(event).catch((error) => setMessage(error.message));
   });
   els.exportButton.addEventListener("click", exportData);
+  els.exportCsvButton.addEventListener("click", exportCsv);
+  els.printReportButton.addEventListener("click", printInventoryReport);
   els.importInput.addEventListener("change", importData);
   [
     els.calcSource,
@@ -628,6 +767,8 @@
     sourceHeightMm,
     sourceHeight,
     visibleSourcesForMode,
+    inventoryExportRows,
+    inventoryCsv,
     toMm,
     fromMm,
     daysBetween,

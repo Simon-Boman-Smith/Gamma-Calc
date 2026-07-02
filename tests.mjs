@@ -70,8 +70,26 @@ const irSource = {
   startStrength: 100,
   strengthDate: "2026-01-01"
 };
-const activeSource = { id: "active", isActive: true, isotope: "Ir-192", serialNumber: "A" };
-const inactiveSource = { id: "inactive", isActive: false, isotope: "Ir-192", serialNumber: "B" };
+const activeSource = {
+  id: "active",
+  isActive: true,
+  isotope: "Ir-192",
+  serialNumber: "A",
+  containerNumber: "C1",
+  startStrength: 100,
+  strengthDate: "2026-01-01",
+  notes: "Ready"
+};
+const inactiveSource = {
+  id: "inactive",
+  isActive: false,
+  isotope: "Ir-192",
+  serialNumber: "B",
+  containerNumber: "C2",
+  startStrength: 80,
+  strengthDate: "2026-01-01",
+  notes: "Old, store"
+};
 
 assert.equal(GammaCalc.ISOTOPES["Ir-192"].halfLifeDays, 73.82);
 assert.equal(GammaCalc.ISOTOPES["Co-60"].halfLifeDays, 5.2714 * 365.25);
@@ -93,6 +111,11 @@ assert.equal(GammaCalc.formatMinutes(1 + 1 / 60), "1 min 01 sec");
 assert.equal(GammaCalc.formatMinutes(0.5), "30 secs");
 assert.deepEqual(GammaCalc.visibleSourcesForMode([activeSource, inactiveSource], false), [activeSource]);
 assert.deepEqual(GammaCalc.visibleSourcesForMode([activeSource, inactiveSource], true), [activeSource, inactiveSource]);
+assert.equal(
+  GammaCalc.inventoryExportRows([inactiveSource, activeSource], "2026-01-01").map((row) => row.status).join("|"),
+  "Active|Inactive"
+);
+assert.ok(GammaCalc.inventoryCsv([inactiveSource], "2026-01-01").includes('"Old, store"'));
 
 const minutes = GammaCalc.exposureTimeMinutes(
   { isotope: "Ir-192", startStrength: 100, strengthDate: "2026-01-01" },

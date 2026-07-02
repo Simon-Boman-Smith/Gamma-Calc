@@ -14,6 +14,7 @@ It is intended to run as a small web app on an internal Ubuntu server, so operat
 - Show operators only active sources in the inventory and calculator.
 - Show admins the full source history, including inactive old sources.
 - Require admin login before source records can be added, edited, deactivated, imported, exported, or deleted.
+- Let admins export source history as JSON, CSV for Excel, or a formatted printable report that can be saved as PDF.
 - Calculate exposure time from technique curie-minutes, technique distance, actual distance, and current source strength.
 - Display exposure time as minutes and seconds, for example `26 mins 42 secs`.
 - Support distances in `mm` or `in`.
@@ -102,7 +103,10 @@ Admins can:
 - Add the new monthly Ir-192 source.
 - Mark old sources inactive.
 - Edit or delete source records.
-- Import and export JSON source records.
+- Import JSON source records.
+- Export JSON source records.
+- Export CSV source records for Excel.
+- Print a formatted inventory report, which can be saved as PDF from the browser print dialog.
 - Change the admin password.
 
 ## Windows Local Preview
