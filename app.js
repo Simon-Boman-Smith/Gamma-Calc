@@ -421,7 +421,7 @@
         </div>
         <dl class="source-details">
           <div><dt>Container</dt><dd>${escapeHtml(source.containerNumber)}</dd></div>
-          <div><dt>Current</dt><dd>${formatCi(current)}</dd></div>
+          <div><dt>Current</dt><dd class="source-current-strength">${formatCi(current)}</dd></div>
           <div><dt>Starting</dt><dd>${formatCi(Number(source.startStrength))}</dd></div>
           <div><dt>Age</dt><dd>${age.toFixed(0)} days</dd></div>
           <div><dt>Date</dt><dd>${escapeHtml(source.strengthDate)}</dd></div>

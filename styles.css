@@ -405,6 +405,11 @@ button:focus-visible {
   color: var(--warning);
 }
 
+.source-current-strength {
+  color: var(--warning);
+  font-weight: 900;
+}
+
 .height-panel h2,
 .source-panel h2 {
   font-size: 1.15rem;
