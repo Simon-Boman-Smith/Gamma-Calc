@@ -83,13 +83,25 @@
             </label>
 
             <label>
-              Technique distance (mm)
-              <input id="referenceDistance" type="number" min="1" step="1" value="1200" required>
+              Technique distance
+              <span class="unit-field">
+                <input id="referenceDistance" type="number" min="0.001" step="0.001" value="1200" required>
+                <select id="referenceDistanceUnit" aria-label="Technique distance unit">
+                  <option value="mm" selected>mm</option>
+                  <option value="in">in</option>
+                </select>
+              </span>
             </label>
 
             <label>
-              Actual distance (mm)
-              <input id="actualDistance" type="number" min="1" step="1" value="1200" required>
+              Actual distance
+              <span class="unit-field">
+                <input id="actualDistance" type="number" min="0.001" step="0.001" value="1200" required>
+                <select id="actualDistanceUnit" aria-label="Actual distance unit">
+                  <option value="mm" selected>mm</option>
+                  <option value="in">in</option>
+                </select>
+              </span>
             </label>
 
             <label>
@@ -129,13 +141,27 @@
         <form id="heightForm" class="calculator-form">
           <div class="form-grid">
             <label>
-              Source-to-film distance (mm)
-              <input id="heightDistance" type="number" min="1" step="1" value="1200" required>
+              Source-to-film distance
+              <span class="unit-field">
+                <input id="heightDistance" type="number" min="0.001" step="0.001" value="1200" required>
+                <select id="heightDistanceUnit" aria-label="Source-to-film distance unit">
+                  <option value="mm" selected>mm</option>
+                  <option value="in">in</option>
+                </select>
+              </span>
             </label>
 
             <label>
               Angle (degrees)
               <input id="exposureAngle" type="number" min="0" max="90" step="0.1" value="45" required>
+            </label>
+
+            <label>
+              Height result unit
+              <select id="heightResultUnit">
+                <option value="mm" selected>mm</option>
+                <option value="in">in</option>
+              </select>
             </label>
           </div>
 
@@ -159,7 +185,7 @@
         </div>
 
         <p class="formula-note">
-          Height = sin(angle) x source-to-film distance.
+          Height = sin(angle) x source-to-film distance. Distances can be entered in mm or inches.
         </p>
       </section>
 

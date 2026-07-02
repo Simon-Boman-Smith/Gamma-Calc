@@ -80,8 +80,12 @@ assert.ok(Math.abs(oneHalfLifeStrength - 50.37) < 0.1);
 
 assert.equal(GammaCalc.adjustedExposureCiMinutes(1200, 1200, 1200), 1200);
 assert.equal(GammaCalc.adjustedExposureCiMinutes(1200, 1200, 2400), 4800);
+assert.equal(GammaCalc.toMm(1, "in"), 25.4);
+assert.equal(GammaCalc.fromMm(25.4, "in"), 1);
+assert.ok(Math.abs(GammaCalc.adjustedExposureCiMinutes(1200, 1200, GammaCalc.toMm(47.2440944882, "in")) - 1200) < 0.01);
 assert.ok(Math.abs(GammaCalc.sourceHeightMm(1200, 45) - 848.53) < 0.1);
 assert.ok(Math.abs(GammaCalc.sourceHeightMm(1200, 60) - 1039.23) < 0.1);
+assert.ok(Math.abs(GammaCalc.sourceHeight(47.2440944882, 45, "in", "in") - 33.41) < 0.01);
 
 const minutes = GammaCalc.exposureTimeMinutes(
   { isotope: "Ir-192", startStrength: 100, strengthDate: "2026-01-01" },

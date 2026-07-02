@@ -3,6 +3,7 @@
 
   const STORAGE_KEY = "gamma-calc-sources-v1";
   const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  const MM_PER_INCH = 25.4;
   const ISOTOPES = {
     "Ir-192": { halfLifeDays: 73.82, monthlyChangeDays: 31 },
     "Co-60": { halfLifeDays: 5.2714 * 365.25 }
@@ -31,13 +32,17 @@
     calcSource: document.getElementById("calcSource"),
     techniqueExposure: document.getElementById("techniqueExposure"),
     referenceDistance: document.getElementById("referenceDistance"),
+    referenceDistanceUnit: document.getElementById("referenceDistanceUnit"),
     actualDistance: document.getElementById("actualDistance"),
+    actualDistanceUnit: document.getElementById("actualDistanceUnit"),
     calculationDate: document.getElementById("calculationDate"),
     currentStrength: document.getElementById("currentStrength"),
     adjustedExposure: document.getElementById("adjustedExposure"),
     exposureTime: document.getElementById("exposureTime"),
     heightDistance: document.getElementById("heightDistance"),
+    heightDistanceUnit: document.getElementById("heightDistanceUnit"),
     exposureAngle: document.getElementById("exposureAngle"),
+    heightResultUnit: document.getElementById("heightResultUnit"),
     sourceHeight: document.getElementById("sourceHeight"),
     heightAngleDisplay: document.getElementById("heightAngleDisplay"),
     heightForm: document.getElementById("heightForm"),
@@ -92,6 +97,21 @@
     return Number(distanceMm) * Math.sin(radians);
   }
 
+  function toMm(value, unit) {
+    const number = Number(value);
+    return unit === "in" ? number * MM_PER_INCH : number;
+  }
+
+  function fromMm(value, unit) {
+    const number = Number(value);
+    return unit === "in" ? number / MM_PER_INCH : number;
+  }
+
+  function sourceHeight(distance, angleDegrees, distanceUnit = "mm", resultUnit = "mm") {
+    const heightMm = sourceHeightMm(toMm(distance, distanceUnit), angleDegrees);
+    return fromMm(heightMm, resultUnit);
+  }
+
   function loadLocalSources() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -131,6 +151,12 @@
   function formatMm(value) {
     if (!Number.isFinite(value)) return "--";
     return `${value.toFixed(value >= 100 ? 0 : 1)} mm`;
+  }
+
+  function formatDistance(value, unit) {
+    if (!Number.isFinite(value)) return "--";
+    if (unit === "in") return `${value.toFixed(value >= 10 ? 2 : 3)} in`;
+    return formatMm(value);
   }
 
   function setMessage(message) {
@@ -306,16 +332,18 @@
 
     const date = els.calculationDate.value || todayIso();
     const current = currentStrengthCi(source, date);
+    const referenceDistanceMm = toMm(els.referenceDistance.value, els.referenceDistanceUnit.value);
+    const actualDistanceMm = toMm(els.actualDistance.value, els.actualDistanceUnit.value);
     const adjusted = adjustedExposureCiMinutes(
       els.techniqueExposure.value,
-      els.referenceDistance.value,
-      els.actualDistance.value
+      referenceDistanceMm,
+      actualDistanceMm
     );
     const minutes = exposureTimeMinutes(
       source,
       els.techniqueExposure.value,
-      els.referenceDistance.value,
-      els.actualDistance.value,
+      referenceDistanceMm,
+      actualDistanceMm,
       date
     );
 
@@ -325,8 +353,14 @@
   }
 
   function renderHeightCalculation() {
-    const height = sourceHeightMm(els.heightDistance.value, els.exposureAngle.value);
-    els.sourceHeight.textContent = formatMm(height);
+    const resultUnit = els.heightResultUnit.value;
+    const height = sourceHeight(
+      els.heightDistance.value,
+      els.exposureAngle.value,
+      els.heightDistanceUnit.value,
+      resultUnit
+    );
+    els.sourceHeight.textContent = formatDistance(height, resultUnit);
     els.heightAngleDisplay.textContent = `${Number(els.exposureAngle.value).toFixed(1)} deg`;
   }
 
@@ -535,6 +569,11 @@
     renderSources();
   }
 
+  function onValueChange(element, callback) {
+    element.addEventListener("input", callback);
+    element.addEventListener("change", callback);
+  }
+
   els.loginForm.addEventListener("submit", login);
   els.logoutButton.addEventListener("click", logout);
   els.passwordForm.addEventListener("submit", changePassword);
@@ -551,11 +590,13 @@
     els.calcSource,
     els.techniqueExposure,
     els.referenceDistance,
+    els.referenceDistanceUnit,
     els.actualDistance,
+    els.actualDistanceUnit,
     els.calculationDate
-  ].forEach((element) => element.addEventListener("input", renderCalculation));
-  [els.heightDistance, els.exposureAngle].forEach((element) =>
-    element.addEventListener("input", renderHeightCalculation)
+  ].forEach((element) => onValueChange(element, renderCalculation));
+  [els.heightDistance, els.heightDistanceUnit, els.exposureAngle, els.heightResultUnit].forEach((element) =>
+    onValueChange(element, renderHeightCalculation)
   );
   els.heightForm.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-angle]");
@@ -574,6 +615,9 @@
     adjustedExposureCiMinutes,
     exposureTimeMinutes,
     sourceHeightMm,
+    sourceHeight,
+    toMm,
+    fromMm,
     daysBetween,
     ISOTOPES
   };

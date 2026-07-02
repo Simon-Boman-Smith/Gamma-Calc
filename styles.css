@@ -280,6 +280,17 @@ textarea {
   color: var(--ink);
 }
 
+.unit-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 74px;
+  gap: 8px;
+}
+
+.unit-field input,
+.unit-field select {
+  min-width: 0;
+}
+
 textarea {
   resize: vertical;
 }
