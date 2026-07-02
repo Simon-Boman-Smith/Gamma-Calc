@@ -378,18 +378,25 @@
     return { label: "Active", className: "" };
   }
 
+  function visibleSourcesForMode(allSources, adminMode) {
+    return adminMode ? allSources : allSources.filter((source) => source.isActive);
+  }
+
   function renderSources() {
     els.sourceList.innerHTML = "";
+    const visibleSources = visibleSourcesForMode(sources, isAdmin);
 
-    if (sources.length === 0) {
+    if (visibleSources.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.textContent = "No sources saved yet. An admin can unlock editing and add the current source.";
+      empty.textContent = isAdmin
+        ? "No sources saved yet. Add the current source to begin."
+        : "No active sources are available. Ask an admin to add or activate the current source.";
       els.sourceList.append(empty);
       return;
     }
 
-    const sorted = [...sources].sort((a, b) => {
+    const sorted = [...visibleSources].sort((a, b) => {
       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
       return a.isotope.localeCompare(b.isotope) || a.serialNumber.localeCompare(b.serialNumber);
     });
@@ -620,6 +627,7 @@
     formatMinutes,
     sourceHeightMm,
     sourceHeight,
+    visibleSourcesForMode,
     toMm,
     fromMm,
     daysBetween,

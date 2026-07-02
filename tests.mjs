@@ -70,6 +70,8 @@ const irSource = {
   startStrength: 100,
   strengthDate: "2026-01-01"
 };
+const activeSource = { id: "active", isActive: true, isotope: "Ir-192", serialNumber: "A" };
+const inactiveSource = { id: "inactive", isActive: false, isotope: "Ir-192", serialNumber: "B" };
 
 assert.equal(GammaCalc.ISOTOPES["Ir-192"].halfLifeDays, 73.82);
 assert.equal(GammaCalc.ISOTOPES["Co-60"].halfLifeDays, 5.2714 * 365.25);
@@ -89,6 +91,8 @@ assert.ok(Math.abs(GammaCalc.sourceHeight(47.2440944882, 45, "in", "in") - 33.41
 assert.equal(GammaCalc.formatMinutes(26.7), "26 mins 42 secs");
 assert.equal(GammaCalc.formatMinutes(1 + 1 / 60), "1 min 01 sec");
 assert.equal(GammaCalc.formatMinutes(0.5), "30 secs");
+assert.deepEqual(GammaCalc.visibleSourcesForMode([activeSource, inactiveSource], false), [activeSource]);
+assert.deepEqual(GammaCalc.visibleSourcesForMode([activeSource, inactiveSource], true), [activeSource, inactiveSource]);
 
 const minutes = GammaCalc.exposureTimeMinutes(
   { isotope: "Ir-192", startStrength: 100, strengthDate: "2026-01-01" },
