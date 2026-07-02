@@ -6,7 +6,7 @@ It is intended to run as a small web app on an internal Ubuntu server, so operat
 
 ## Current version
 
-- Track Ir-192 and Co-60 sources with serial number, container number, starting strength in curies, strength date, notes, and active/inactive state.
+- Track Ir-192 and Co-60 sources with serial number, container number, starting strength in curies, strength date, optional returned/disposed date, notes, and active/inactive state.
 - Calculate current source strength from radioactive decay.
 - Highlight current strength in Element orange in both the calculator and inventory cards.
 - Use "New monthly source" to quickly enter the next Ir-192 source from the previous record.
@@ -102,6 +102,7 @@ Admins can:
 - View all sources, including inactive old sources.
 - Add the new monthly Ir-192 source.
 - Mark old sources inactive.
+- Record a returned/disposed date for old sources.
 - Edit or delete source records.
 - Import JSON source records.
 - Export JSON source records.

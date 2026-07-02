@@ -26,6 +26,7 @@
     containerNumber: document.getElementById("containerNumber"),
     startStrength: document.getElementById("startStrength"),
     strengthDate: document.getElementById("strengthDate"),
+    returnedDate: document.getElementById("returnedDate"),
     notes: document.getElementById("notes"),
     isActive: document.getElementById("isActive"),
     clearFormButton: document.getElementById("clearFormButton"),
@@ -186,6 +187,7 @@
     els.sourceId.value = "";
     els.isotope.value = "Ir-192";
     els.strengthDate.value = todayIso();
+    els.returnedDate.value = "";
     els.isActive.checked = true;
   }
 
@@ -197,6 +199,7 @@
       containerNumber: els.containerNumber.value.trim(),
       startStrength: Number(els.startStrength.value),
       strengthDate: els.strengthDate.value,
+      returnedDate: els.returnedDate.value || "",
       notes: els.notes.value.trim(),
       isActive: els.isActive.checked,
       updatedAt: new Date().toISOString()
@@ -236,6 +239,7 @@
     els.containerNumber.value = source.containerNumber;
     els.startStrength.value = source.startStrength;
     els.strengthDate.value = source.strengthDate;
+    els.returnedDate.value = source.returnedDate || "";
     els.notes.value = source.notes || "";
     els.isActive.checked = source.isActive;
     els.serialNumber.focus();
@@ -252,6 +256,7 @@
     els.containerNumber.value = source.containerNumber;
     els.startStrength.value = "";
     els.strengthDate.value = todayIso();
+    els.returnedDate.value = "";
     els.notes.value = source.notes || "";
     els.isActive.checked = true;
     els.serialNumber.focus();
@@ -434,6 +439,7 @@
           <div><dt>Starting</dt><dd>${formatCi(Number(source.startStrength))}</dd></div>
           <div><dt>Age</dt><dd>${age.toFixed(0)} days</dd></div>
           <div><dt>Date</dt><dd>${escapeHtml(source.strengthDate)}</dd></div>
+          ${isAdmin || source.returnedDate ? `<div><dt>Returned</dt><dd>${escapeHtml(source.returnedDate || "Not set")}</dd></div>` : ""}
           <div><dt>Half-life</dt><dd>${ISOTOPES[source.isotope].halfLifeDays.toFixed(2)} days</dd></div>
         </dl>
         ${source.notes ? `<p>${escapeHtml(source.notes)}</p>` : ""}
@@ -482,6 +488,7 @@
           startStrengthCi: Number(source.startStrength),
           currentStrengthCi: Number(current.toFixed(3)),
           strengthDate: source.strengthDate,
+          returnedDate: source.returnedDate || "",
           ageDays: Number(ageDays.toFixed(0)),
           halfLifeDays: Number(ISOTOPES[source.isotope].halfLifeDays.toFixed(2)),
           notes: source.notes || ""
@@ -503,6 +510,7 @@
       ["Starting strength (Ci)", "startStrengthCi"],
       ["Current strength (Ci)", "currentStrengthCi"],
       ["Strength date", "strengthDate"],
+      ["Returned / disposed date", "returnedDate"],
       ["Age (days)", "ageDays"],
       ["Half-life (days)", "halfLifeDays"],
       ["Notes", "notes"]
@@ -569,6 +577,7 @@
                 <th>Starting Ci</th>
                 <th>Current Ci</th>
                 <th>Strength date</th>
+                <th>Returned / disposed</th>
                 <th>Age</th>
                 <th>Notes</th>
               </tr>
@@ -585,6 +594,7 @@
                       <td>${escapeHtml(row.startStrengthCi)}</td>
                       <td class="current">${escapeHtml(row.currentStrengthCi)}</td>
                       <td>${escapeHtml(row.strengthDate)}</td>
+                      <td>${escapeHtml(row.returnedDate || "-")}</td>
                       <td>${escapeHtml(row.ageDays)} days</td>
                       <td>${escapeHtml(row.notes)}</td>
                     </tr>`
@@ -616,6 +626,7 @@
             ...importedSource,
             id: importedSource.id || createId(),
             startStrength: Number(importedSource.startStrength),
+            returnedDate: importedSource.returnedDate || "",
             isActive: Boolean(importedSource.isActive)
           };
           if (apiMode) {

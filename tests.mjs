@@ -88,6 +88,7 @@ const inactiveSource = {
   containerNumber: "C2",
   startStrength: 80,
   strengthDate: "2026-01-01",
+  returnedDate: "2026-02-01",
   notes: "Old, store"
 };
 
@@ -115,7 +116,9 @@ assert.equal(
   GammaCalc.inventoryExportRows([inactiveSource, activeSource], "2026-01-01").map((row) => row.status).join("|"),
   "Active|Inactive"
 );
+assert.equal(GammaCalc.inventoryExportRows([inactiveSource], "2026-02-02")[0].returnedDate, "2026-02-01");
 assert.ok(GammaCalc.inventoryCsv([inactiveSource], "2026-01-01").includes('"Old, store"'));
+assert.ok(GammaCalc.inventoryCsv([inactiveSource], "2026-01-01").includes("Returned / disposed date"));
 
 const minutes = GammaCalc.exposureTimeMinutes(
   { isotope: "Ir-192", startStrength: 100, strengthDate: "2026-01-01" },
